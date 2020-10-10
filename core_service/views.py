@@ -136,6 +136,7 @@ class CarGetter(APIView):
             tinify.key = f.read().strip()
 
         result_data = tinify.from_buffer(open("123.jpg", "rb").read()).to_buffer()
+        print(open("123.jpg", "rb").read()[:100])
         # result_data = tinify.from_buffer(request.body).to_buffer()
 
         data = {"content": base64.encodebytes(result_data).decode("UTF-8").replace("\n", "")}
