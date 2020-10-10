@@ -21,12 +21,12 @@ class SettingsGetter(APIView):
     def get_settings(request):
         conn = http.client.HTTPSConnection("gw.hackathon.vtb.ru")
 
-        with open('client_id.txt', 'r') as f:
+        with open("client_id.txt", "r") as f:
             client_id = f.read()
 
         headers = {
-            'x-ibm-client-id': client_id,
-            'accept': "application/json"
+            "x-ibm-client-id": client_id,
+            "accept": "application/json"
         }
 
         conn.request("GET", "/vtb/hackathon/settings?name=Haval&language=en", headers=headers)
@@ -58,19 +58,20 @@ class CalculationsGetter(APIView):
 
         payload_json = json.dumps(payload)
 
-        with open('client_id.txt', 'r') as f:
+        with open("client_id.txt", "r") as f:
             client_id = f.read()
 
         headers = {
-            'x-ibm-client-id': client_id,
-            'content-type': "application/json",
-            'accept': "application/json"
+            "x-ibm-client-id": client_id,
+            "content-type": "application/json",
+            "accept": "application/json"
         }
 
         conn.request("POST", "/vtb/hackathon/calculate", payload_json, headers)
 
         res = conn.getresponse()
         data = res.read()
+        print(json.loads(data)[""])
 
         return data.decode("utf-8")
 
@@ -102,13 +103,13 @@ class CarLoan(APIView):
                    "vehicle_cost": received_data["vehicle_cost"]}
         payload_json = json.dumps(payload)
 
-        with open('client_id.txt', 'r') as f:
+        with open("client_id.txt", "r") as f:
             client_id = f.read()
 
         headers = {
-            'x-ibm-client-id': client_id,
-            'content-type': "application/json",
-            'accept': "application/json"
+            "x-ibm-client-id": client_id,
+            "content-type": "application/json",
+            "accept": "application/json"
         }
 
         conn.request("POST", "/vtb/hackathon/carloan", payload_json, headers)
@@ -128,17 +129,17 @@ class CarGetter(APIView):
     @staticmethod
     def get_cars(request):
         conn = http.client.HTTPSConnection("gw.hackathon.vtb.ru")
-        data = {"content": base64.encodebytes(open('123.jpg', 'rb').read()).decode('UTF-8').replace('\n', '')}
+        data = {"content": base64.encodebytes(open("123.jpg", "rb").read()).decode("UTF-8").replace("\n", "")}
 
         payload = json.dumps(data)
 
-        with open('client_id.txt', 'r') as f:
+        with open("client_id.txt", "r") as f:
             client_id = f.read()
 
         headers = {
-            'x-ibm-client-id': client_id,
-            'content-type': "application/json",
-            'accept': "application/json"
+            "x-ibm-client-id": client_id,
+            "content-type": "application/json",
+            "accept": "application/json"
         }
 
         conn.request("POST", "/vtb/hackathon/car-recognize", payload, headers)
@@ -149,11 +150,11 @@ class CarGetter(APIView):
         conn.request("GET", "/vtb/hackathon/marketplace", headers=headers)
 
         res = conn.getresponse()
-        data_2 = res.read().decode('utf-8')
+        data_2 = res.read().decode("utf-8")
 
         data_2_obj = json.loads(data_2)
-        carListValues = list(ast.literal_eval(data_1)['probabilities'].values())
-        carList = ast.literal_eval(data_1)['probabilities']
+        carListValues = list(ast.literal_eval(data_1)["probabilities"].values())
+        carList = ast.literal_eval(data_1)["probabilities"]
         carListEnd = list()
         for el in carListValues:
             carListEnd.append(float(el))
@@ -181,8 +182,8 @@ class CarGetter(APIView):
 
         cars = {
             "currency": {
-                "usd": rates['USD'].value,
-                "eur": rates['EUR'].value,
+                "usd": rates["USD"].value,
+                "eur": rates["EUR"].value,
                 "doshirak": 40
             },
             "list": []
@@ -196,20 +197,20 @@ class CarGetter(APIView):
                 j = hardcode[carName][1]
 
                 tempCar = {
-                    "title": data_2_obj['list'][i]['title'],
-                    "model": data_2_obj['list'][i]['models'][j]['title'],
-                    "colors": data_2_obj['list'][i]['models'][j]['colorsCount'],
-                    "doors": data_2_obj['list'][i]['models'][j]['bodies'][0]['doors'],
-                    "type": data_2_obj['list'][i]['models'][j]['bodies'][0]['type'],
-                    "logo": data_2_obj['list'][i]['logo'],
-                    "photo": data_2_obj['list'][i]['models'][j]['photo'],
-                    "price": data_2_obj['list'][i]['models'][j]['minPrice'],
+                    "title": data_2_obj["list"][i]["title"],
+                    "model": data_2_obj["list"][i]["models"][j]["title"],
+                    "colors": data_2_obj["list"][i]["models"][j]["colorsCount"],
+                    "doors": data_2_obj["list"][i]["models"][j]["bodies"][0]["doors"],
+                    "type": data_2_obj["list"][i]["models"][j]["bodies"][0]["type"],
+                    "logo": data_2_obj["list"][i]["logo"],
+                    "photo": data_2_obj["list"][i]["models"][j]["photo"],
+                    "price": data_2_obj["list"][i]["models"][j]["minPrice"],
                 }
 
-                cars['list'].append(tempCar)
+                cars["list"].append(tempCar)
 
         carsListTemp = list()
         for k in range(3):
-            carsListTemp.append(cars['list'][k])
+            carsListTemp.append(cars["list"][k])
 
         return json.dumps(carsListTemp)
