@@ -25,7 +25,7 @@ class SettingsGetter(APIView):
             client_id = f.read()
 
         headers = {
-            "x-ibm-client-id": client_id,
+            "x-ibm-client-id": client_id.strip(),
             "accept": "application/json"
         }
 
@@ -62,7 +62,7 @@ class CalculationsGetter(APIView):
             client_id = f.read()
 
         headers = {
-            "x-ibm-client-id": client_id,
+            "x-ibm-client-id": client_id.strip(),
             "content-type": "application/json",
             "accept": "application/json"
         }
@@ -71,7 +71,6 @@ class CalculationsGetter(APIView):
 
         res = conn.getresponse()
         data = res.read()
-        print(json.loads(data)[""])
 
         return data.decode("utf-8")
 
@@ -107,7 +106,7 @@ class CarLoan(APIView):
             client_id = f.read()
 
         headers = {
-            "x-ibm-client-id": client_id,
+            "x-ibm-client-id": client_id.strip(),
             "content-type": "application/json",
             "accept": "application/json"
         }
@@ -128,8 +127,9 @@ class CarGetter(APIView):
     
     @staticmethod
     def get_cars(request):
+        
         conn = http.client.HTTPSConnection("gw.hackathon.vtb.ru")
-        data = {"content": base64.encodebytes(open("123.jpg", "rb").read()).decode("UTF-8").replace("\n", "")}
+        data = {"content": base64.encodebytes(request.body).decode("UTF-8").replace("\n", "")}
 
         payload = json.dumps(data)
 
@@ -137,7 +137,7 @@ class CarGetter(APIView):
             client_id = f.read()
 
         headers = {
-            "x-ibm-client-id": client_id,
+            "x-ibm-client-id": client_id.strip(),
             "content-type": "application/json",
             "accept": "application/json"
         }
@@ -146,6 +146,8 @@ class CarGetter(APIView):
 
         res = conn.getresponse()
         data_1 = res.read().decode("utf-8")
+
+        print(data_1)
 
         conn.request("GET", "/vtb/hackathon/marketplace", headers=headers)
 
