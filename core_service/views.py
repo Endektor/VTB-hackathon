@@ -132,9 +132,11 @@ class CarGetter(APIView):
     def get_cars(request):
         conn = http.client.HTTPSConnection("gw.hackathon.vtb.ru")
 
-        with open("tinyfy_id.txt", "r") as f:
+        with open("tinify_id.txt", "r") as f:
             tinify.key = f.read().strip()
+
         result_data = tinify.from_buffer(open("123.jpg", "rb").read()).to_buffer()
+        # result_data = tinify.from_buffer(request.body).to_buffer()
 
         data = {"content": base64.encodebytes(result_data).decode("UTF-8").replace("\n", "")}
 

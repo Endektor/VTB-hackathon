@@ -3,5 +3,5 @@ db*
 123*.jpg
 client_id.txt
 secret_key.txt
-tinyfy_id.txt
+tinify_id.txt
 *env
