@@ -8,6 +8,7 @@ import http.client
 import json
 from pycbrf.toolbox import ExchangeRates
 from tinify import tinify
+import pytz
 
 
 class SettingsGetter(APIView):
@@ -59,8 +60,6 @@ class CalculationsGetter(APIView):
         with open('client_id.txt', 'r') as f:
             client_id = f.read()
 
-        print(type(client_id))
-
         headers = {
             'x-ibm-client-id': client_id.strip(),
             'content-type': "application/json",
@@ -71,7 +70,6 @@ class CalculationsGetter(APIView):
 
         res = conn.getresponse()
         data = res.read()
-
 
         return data.decode("utf-8")
 
@@ -87,6 +85,8 @@ class CarLoan(APIView):
 
         received_data = json.loads(request.body)
 
+        date = datetime.now(pytz.timezone('Europe/Moscow')).strftime("%Y-%m-%dT%H:%M:%SZ")
+
         payload = {"comment": "Комментарий",
                    "customer_party": {"email": received_data["email"],
                                       "income_amount": received_data["income_amount"],
@@ -97,7 +97,7 @@ class CarLoan(APIView):
                                                  "gender": received_data["gender"],
                                                  "middle_name": received_data["middle_name"],
                                                  "nationality_country_code": "RU"}, "phone": received_data["phone"]},
-                   "datetime": "2020-10-10T08:15:47Z", "interest_rate": 15.7,
+                   "datetime": date, "interest_rate": received_data["interest_rate"],
                    "requested_amount": received_data["requested_amount"],
                    "requested_term": received_data["requested_term"], "trade_mark": received_data["trade_mark"],
                    "vehicle_cost": received_data["vehicle_cost"]}
@@ -206,14 +206,14 @@ class CarGetter(APIView):
                 j = hardcode[carName][1]
 
                 tempCar = {
-                    "title": data_2_obj['list'][i]['title'],
-                    "model": data_2_obj['list'][i]['models'][j]['title'],
-                    "colors": data_2_obj['list'][i]['models'][j]['colorsCount'],
-                    "doors": data_2_obj['list'][i]['models'][j]['bodies'][0]['doors'],
-                    "type": data_2_obj['list'][i]['models'][j]['bodies'][0]['type'],
-                    "logo": data_2_obj['list'][i]['logo'],
-                    "photo": data_2_obj['list'][i]['models'][j]['photo'],
-                    "price": data_2_obj['list'][i]['models'][j]['minPrice'],
+                    "title": data_2_obj["list"][i]['title'],
+                    "model": data_2_obj["list"][i]['models'][j]['title'],
+                    "colors": data_2_obj["list"][i]['models'][j]['colorsCount'],
+                    "doors": data_2_obj["list"][i]['models'][j]['bodies'][0]['doors'],
+                    "type": data_2_obj["list"][i]['models'][j]['bodies'][0]['type'],
+                    "logo": data_2_obj["list"][i]['logo'],
+                    "photo": data_2_obj["list"][i]['models'][j]['photo'],
+                    "price": data_2_obj["list"][i]['models'][j]['minPrice'],
                 }
 
                 cars['list'].append(tempCar)
