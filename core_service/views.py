@@ -1,9 +1,7 @@
 from django.http import HttpResponse
-from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from datetime import datetime
-from PIL import Image
+
 import ast
 import base64
 import http.client
@@ -40,11 +38,11 @@ class SettingsGetter(APIView):
 class CalculationsGetter(APIView):
 
     def post(self, request):
-        return HttpResponse(self.get_calculations(request))
+        return HttpResponse(self.post_calculations(request))
         # return Response(self.get_calculations(request))
 
     @staticmethod
-    def get_calculations(request):
+    def post_calculations(request):
 
         received_data = json.loads(request.body)
 
@@ -126,20 +124,20 @@ class CarGetter(APIView):
 
     def post(self, request):
 
-        return HttpResponse(self.get_cars(request))
-    
+        return HttpResponse(self.post_cars(request))
+
+
     @staticmethod
-    def get_cars(request):
+    def post_cars(request):
         conn = http.client.HTTPSConnection("gw.hackathon.vtb.ru")
 
         with open("tinify_id.txt", "r") as f:
             tinify.key = f.read().strip()
 
-        result_data = tinify.from_buffer(open("123.jpg", "rb").read()).to_buffer()
-        print(open("123.jpg", "rb").read()[:100])
-        # result_data = tinify.from_buffer(request.body).to_buffer()
+        result_data = tinify.from_buffer(request.data.get('content').file.read()).to_buffer()
 
-        data = {"content": base64.encodebytes(result_data).decode("UTF-8").replace("\n", "")}
+        print(request.data.get('content').file)
+        data = {"content": base64.encodebytes(result_data).decode('UTF-8').replace('\n', '')}
 
         payload = json.dumps(data)
 
@@ -156,6 +154,7 @@ class CarGetter(APIView):
 
         res = conn.getresponse()
         data_1 = res.read().decode("utf-8")
+        print(data_1)
 
         conn.request("GET", "/vtb/hackathon/marketplace", headers=headers)
 
