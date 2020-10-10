@@ -1,6 +1,7 @@
 db*
 */migrations/
-123.jpg
+123*.jpg
 client_id.txt
 secret_key.txt
-venv
+tinyfy_id.txt
+*env

@@ -1,5 +1,3 @@
-import os
-
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,6 +9,7 @@ import base64
 import http.client
 import json
 from pycbrf.toolbox import ExchangeRates
+from tinify import tinify
 
 
 class SettingsGetter(APIView):
@@ -26,7 +25,7 @@ class SettingsGetter(APIView):
             client_id = f.read()
 
         headers = {
-            'x-ibm-client-id': client_id,
+            'x-ibm-client-id': client_id.strip(),
             'accept': "application/json"
         }
 
@@ -65,7 +64,7 @@ class CalculationsGetter(APIView):
         print(type(client_id))
 
         headers = {
-            'x-ibm-client-id': client_id,
+            'x-ibm-client-id': client_id.strip(),
             'content-type': "application/json",
             'accept': "application/json"
         }
@@ -110,7 +109,7 @@ class CarLoan(APIView):
             client_id = f.read()
 
         headers = {
-            'x-ibm-client-id': client_id,
+            'x-ibm-client-id': client_id.strip(),
             'content-type': "application/json",
             'accept': "application/json"
         }
@@ -133,22 +132,21 @@ class CarGetter(APIView):
     def get_cars(request):
         conn = http.client.HTTPSConnection("gw.hackathon.vtb.ru")
 
-        im = Image.open('123.jpg')
-        print('Input file size   : ', os.path.getsize('123.jpg'))
-        im.save("1", optimize=True, quality=50)
-        print('Output file size   : ', im.size)
+        with open("tinyfy_id.txt", "r") as f:
+            tinify.key = f.read().strip()
+        result_data = tinify.from_buffer(open("123.jpg", "rb").read()).to_buffer()
 
-        data = {"content": base64.encodebytes(open('123.jpg', 'rb').read()).decode('UTF-8').replace('\n', '')}
+        data = {"content": base64.encodebytes(result_data).decode("UTF-8").replace("\n", "")}
 
         payload = json.dumps(data)
 
-        with open('client_id.txt', 'r') as f:
+        with open("client_id.txt", "r") as f:
             client_id = f.read()
 
         headers = {
-            'x-ibm-client-id': client_id,
-            'content-type': "application/json",
-            'accept': "application/json"
+            "x-ibm-client-id": client_id.strip(),
+            "content-type": "application/json",
+            "accept": "application/json"
         }
 
         conn.request("POST", "/vtb/hackathon/car-recognize", payload, headers)
@@ -159,11 +157,11 @@ class CarGetter(APIView):
         conn.request("GET", "/vtb/hackathon/marketplace", headers=headers)
 
         res = conn.getresponse()
-        data_2 = res.read().decode('utf-8')
+        data_2 = res.read().decode("utf-8")
 
         data_2_obj = json.loads(data_2)
-        carListValues = list(ast.literal_eval(data_1)['probabilities'].values())
-        carList = ast.literal_eval(data_1)['probabilities']
+        carListValues = list(ast.literal_eval(data_1)["probabilities"].values())
+        carList = ast.literal_eval(data_1)["probabilities"]
         carListEnd = list()
         for el in carListValues:
             carListEnd.append(float(el))
@@ -191,8 +189,8 @@ class CarGetter(APIView):
 
         cars = {
             "currency": {
-                "usd": rates['USD'].value,
-                "eur": rates['EUR'].value,
+                "usd": rates["USD"].value,
+                "eur": rates["EUR"].value,
                 "doshirak": 40
             },
             "list": []
