@@ -11,48 +11,28 @@ from tinify import tinify
 import pytz
 
 
-class SettingsGetter(APIView):
-
-    def get(self, request):
-        return HttpResponse(self.get_settings(request))
-
-    @staticmethod
-    def get_settings(request):
-        conn = http.client.HTTPSConnection("gw.hackathon.vtb.ru")
-
-        with open('client_id.txt', 'r') as f:
-            client_id = f.read()
-
-        headers = {
-            'x-ibm-client-id': client_id.strip(),
-            'accept': "application/json"
-        }
-
-        conn.request("GET", "/vtb/hackathon/settings?name=Haval&language=en", headers=headers)
-
-        res = conn.getresponse()
-        data = res.read()
-
-        return data.decode("utf-8")
-
-
 class CalculationsGetter(APIView):
 
     def post(self, request):
         return HttpResponse(self.post_calculations(request))
-        # return Response(self.get_calculations(request))
 
-    @staticmethod
-    def post_calculations(request):
+    def post_calculations(self, request):
 
         received_data = json.loads(request.body)
 
         conn = http.client.HTTPSConnection("gw.hackathon.vtb.ru")
 
+        specialConditions_dict = json.loads(self.get_settings(request))
+        specialConditions = [
+            specialConditions_dict["specialConditions"][0]["id"],
+            specialConditions_dict["specialConditions"][1]["id"],
+            specialConditions_dict["specialConditions"][2]["id"]
+        ]
+
         payload = {"clientTypes": ["ac43d7e4-cd8c-4f6f-b18a-5ccbc1356f75"],
                    "cost": received_data["cost"], "initialFee": received_data["initialFee"], "kaskoValue": 10000,
                    "language": "en", "residualPayment": 0, "settingsName": "Haval",
-                   "specialConditions": received_data["specialConditions"],
+                   "specialConditions": specialConditions,
                    "term": received_data["term"]}
 
         payload_json = json.dumps(payload)
@@ -67,6 +47,25 @@ class CalculationsGetter(APIView):
         }
 
         conn.request("POST", "/vtb/hackathon/calculate", payload_json, headers)
+
+        res = conn.getresponse()
+        data = res.read()
+
+        return data.decode("utf-8")
+
+    @staticmethod
+    def get_settings(request):
+        conn = http.client.HTTPSConnection("gw.hackathon.vtb.ru")
+
+        with open('client_id.txt', 'r') as f:
+            client_id = f.read()
+
+        headers = {
+            'x-ibm-client-id': client_id.strip(),
+            'accept': "application/json"
+        }
+
+        conn.request("GET", "/vtb/hackathon/settings?name=Haval&language=en", headers=headers)
 
         res = conn.getresponse()
         data = res.read()
@@ -206,14 +205,14 @@ class CarGetter(APIView):
                 j = hardcode[carName][1]
 
                 tempCar = {
-                    "title": data_2_obj["list"][i]['title'],
-                    "model": data_2_obj["list"][i]['models'][j]['title'],
-                    "colors": data_2_obj["list"][i]['models'][j]['colorsCount'],
-                    "doors": data_2_obj["list"][i]['models'][j]['bodies'][0]['doors'],
-                    "type": data_2_obj["list"][i]['models'][j]['bodies'][0]['type'],
-                    "logo": data_2_obj["list"][i]['logo'],
-                    "photo": data_2_obj["list"][i]['models'][j]['photo'],
-                    "price": data_2_obj["list"][i]['models'][j]['minPrice'],
+                    "title": data_2_obj["list"][i]["title"],
+                    "model": data_2_obj["list"][i]["models"][j]["title"],
+                    "colors": data_2_obj["list"][i]["models"][j]["colorsCount"],
+                    "doors": data_2_obj["list"][i]["models"][j]["bodies"][0]["doors"],
+                    "type": data_2_obj["list"][i]["models"][j]["bodies"][0]["type"],
+                    "logo": data_2_obj["list"][i]["logo"],
+                    "photo": data_2_obj["list"][i]["models"][j]["photo"],
+                    "price": data_2_obj["list"][i]["models"][j]["minPrice"],
                 }
 
                 cars['list'].append(tempCar)

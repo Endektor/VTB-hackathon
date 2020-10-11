@@ -22,7 +22,6 @@ from core_service import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/post_cars', views.CarGetter.as_view()),
-    path('api/get_settings', views.SettingsGetter.as_view()),
     # path('api/post_payments_graph', views.PaymentsGraphGetter.as_view()),
     path('api/post_calculations', views.CalculationsGetter.as_view()),
     path('api/post_car_loan', views.CarLoan.as_view()),
