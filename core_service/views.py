@@ -30,10 +30,10 @@ class CalculationsGetter(APIView):
         ]
 
         payload = {"clientTypes": ["ac43d7e4-cd8c-4f6f-b18a-5ccbc1356f75"],
-                   "cost": received_data["cost"], "initialFee": received_data["initialFee"], "kaskoValue": 10000,
+                   "cost": received_data["cost"], "initialFee": int(received_data["initialFee"]), "kaskoValue": 10000,
                    "language": "en", "residualPayment": 0, "settingsName": "Haval",
                    "specialConditions": specialConditions,
-                   "term": received_data["term"]}
+                   "term": int(received_data["term"])}
 
         payload_json = json.dumps(payload)
 
@@ -88,7 +88,7 @@ class CarLoan(APIView):
 
         payload = {"comment": "Комментарий",
                    "customer_party": {"email": received_data["email"],
-                                      "income_amount": received_data["income_amount"],
+                                      "income_amount": int(received_data["income_amount"]),
                                       "person": {"birth_date_time": received_data["birth_date_time"],
                                                  "birth_place": received_data["birth_place"],
                                                  "family_name": received_data["family_name"],
@@ -135,7 +135,6 @@ class CarGetter(APIView):
 
         result_data = tinify.from_buffer(request.data.get('content').file.read()).to_buffer()
 
-        print(request.data.get('content').file)
         data = {"content": base64.encodebytes(result_data).decode('UTF-8').replace('\n', '')}
 
         payload = json.dumps(data)
@@ -153,7 +152,6 @@ class CarGetter(APIView):
 
         res = conn.getresponse()
         data_1 = res.read().decode("utf-8")
-        print(data_1)
 
         conn.request("GET", "/vtb/hackathon/marketplace", headers=headers)
 
@@ -209,7 +207,7 @@ class CarGetter(APIView):
                     "model": data_2_obj["list"][i]["models"][j]["title"],
                     "colors": data_2_obj["list"][i]["models"][j]["colorsCount"],
                     "doors": data_2_obj["list"][i]["models"][j]["bodies"][0]["doors"],
-                    "type": data_2_obj["list"][i]["models"][j]["bodies"][0]["type"],
+                    "type": data_2_obj["list"][i]["models"][j]["bodies"][0]["title"],
                     "logo": data_2_obj["list"][i]["logo"],
                     "photo": data_2_obj["list"][i]["models"][j]["photo"],
                     "price": data_2_obj["list"][i]["models"][j]["minPrice"],
